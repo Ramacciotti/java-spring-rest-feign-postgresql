@@ -15,7 +15,7 @@ import java.util.UUID;
 
 @Slf4j
 @RestController
-@RequestMapping("/v1")
+@RequestMapping("/v1/employee")
 @CrossOrigin(origins = "*")
 @Tag(name = "Employee Controller")
 public class EmployeeController {
