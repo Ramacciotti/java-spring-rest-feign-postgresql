@@ -12,7 +12,7 @@
 
 	<groupId>com.ramacciotti</groupId>
 	<artifactId>employee-crud</artifactId>
-	<version>0.0.5-SNAPSHOT</version>
+	<version>0.0.6-SNAPSHOT</version>
 	<name>Employee CRUD</name>
 	<description>CRUD Microservice that consumes employee data from an external API and saves it on a local database.</description>
 
@@ -120,19 +120,10 @@
 						<goals>
 							<goal>prepare-agent</goal>
 						</goals>
-						<configuration>
-							<excludes>
-								<exclude>**/dto/**</exclude>
-								<exclude>**/exceptions/**</exclude>
-								<exclude>**/utils/**</exclude>
-								<exclude>**/model/**</exclude>
-								<exclude>**/Application.class</exclude>
-							</excludes>
-						</configuration>
 					</execution>
 					<execution>
 						<id>report</id>
-						<phase>test</phase>
+						<phase>prepare-package</phase>
 						<goals>
 							<goal>report</goal>
 						</goals>
@@ -150,11 +141,17 @@
 										<limit>
 											<counter>INSTRUCTION</counter>
 											<value>COVEREDRATIO</value>
-											<minimum>0.80</minimum> <!-- exige 80% -->
+											<minimum>0.80</minimum>
 										</limit>
 									</limits>
 								</rule>
 							</rules>
+							<excludes>
+								<exclude>**/model/**</exclude>
+								<exclude>**/dto/**</exclude>
+								<exclude>**/exception/**</exclude>
+								<exclude>**/*Application.class</exclude>
+							</excludes>
 						</configuration>
 					</execution>
 				</executions>
