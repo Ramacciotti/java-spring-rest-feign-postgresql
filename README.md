@@ -2,8 +2,6 @@
 
 Projeto de CRUD de funcionários desenvolvido com Spring Boot, Feign Client e PostgreSQL.
 
----
-
 ## Sumário
 
 - [Descrição](#descrição)
@@ -16,13 +14,9 @@ Projeto de CRUD de funcionários desenvolvido com Spring Boot, Feign Client e Po
 - [Contribuições](#contribuições)
 - [Licença](#licença)
 
----
-
 ## Descrição
 
 Este projeto implementa um sistema CRUD para gerenciamento de funcionários, utilizando Spring Boot para a aplicação, Feign Client para comunicação com APIs externas e PostgreSQL como banco de dados.
-
----
 
 ## Tecnologias
 
@@ -35,15 +29,11 @@ Este projeto implementa um sistema CRUD para gerenciamento de funcionários, uti
 - JaCoCo (para cobertura de testes)
 - Mockito & JUnit 5 (para testes unitários)
 
----
-
 ## Pré-requisitos
 
 - Java 17 ou superior instalado
 - Maven 3.6 ou superior instalado
 - Banco de dados PostgreSQL configurado e rodando
-
----
 
 ## Como rodar
 
@@ -63,15 +53,11 @@ Este projeto implementa um sistema CRUD para gerenciamento de funcionários, uti
   ```mvn clean install```
   ```mvn spring-boot:run```
 
----
-
 ## Como rodar
 
 Para executar os testes unitários e gerar o relatório de cobertura:
 
  ```mvn clean verify```
-
----
 
 ## Configurações importantes
 
@@ -79,13 +65,9 @@ Para executar os testes unitários e gerar o relatório de cobertura:
 2) Caso queira alterar exclusões ou configurações do JaCoCo, veja o arquivo pom.xml.
 3) Configure as credenciais e URL do banco de dados no arquivo application.properties ou application.yml.
 
----
-
 ## Contribuições
 
 Este é um projeto pessoal, não estão previstas contribuições externas.
-
----
 
 ## Licença
 
