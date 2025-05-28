@@ -5,7 +5,7 @@ create table address
     street    varchar(255),
     suite     varchar(255),
     zipcode   varchar(255),
-    person_id uuid,
+    employee_id uuid,
     primary key (id)
 )
 
@@ -15,7 +15,7 @@ create table company
     bs           varchar(255),
     catch_phrase varchar(255),
     name         varchar(255),
-    person_id    uuid,
+    employee_id    uuid,
     primary key (id)
 )
 
@@ -28,7 +28,7 @@ create table geo
     primary key (id)
 )
 
-create table person
+create table employee
 (
     id       uuid not null,
     email    varchar(255),
@@ -41,13 +41,13 @@ create table person
 
 alter table if exists address
     add constraint FK81ihijcn1kdfwffke0c0sjqeb
-    foreign key (person_id)
-    references person
+    foreign key (employee_id)
+    references employee
 
 alter table if exists company
     add constraint FK29qmftcirjgc06i9n5clkxlk8
-    foreign key (person_id)
-    references person
+    foreign key (employee_id)
+    references employee
 
 alter table if exists geo
     add constraint FK5wrqffc1r4lh16tibwcotrdhi
