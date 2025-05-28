@@ -2,6 +2,7 @@ package com.ramacciotti.service.impl;
 
 import com.ramacciotti.api.EmployeeApi;
 import com.ramacciotti.dto.EmployeeDTO;
+import com.ramacciotti.exception.*;
 import com.ramacciotti.model.Employee;
 import com.ramacciotti.repository.EmployeeRepository;
 import com.ramacciotti.service.AddressService;
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
 
 @Slf4j
 @Service
@@ -24,6 +26,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     private final EmployeeRepository employeeRepository;
     private final AddressService addressService;
     private final CompanyService companyService;
+    private final ModelMapper modelMapper = new ModelMapper();
 
     public EmployeeServiceImpl(EmployeeApi employeeApi, EmployeeRepository employeeRepository, AddressService addressService, CompanyService companyService) {
         this.employeeApi = employeeApi;
@@ -32,61 +35,113 @@ public class EmployeeServiceImpl implements EmployeeService {
         this.companyService = companyService;
     }
 
+    @Override
     @Transactional
-    public List<EmployeeDTO> saveEmployee() throws Exception {
-        List<EmployeeDTO> employeeListDTO;
-
+    public List<EmployeeDTO> fetchAndSaveEmployeesFromApi() throws ExternalApiException {
         try {
             log.info("Fetching data from external API...");
-            employeeListDTO = employeeApi.fetchUsers();
-            employeeListDTO.forEach(employee -> log.debug("Employee fetched from external API: {}", employee.getEmail()));
-            saveToDatabase(employeeListDTO);
-            log.info("Employees successfully saved on database!");
-        } catch (FeignException error) {
-            log.error("Could not fetch data from external API: {}", error.getMessage());
-            throw new Exception("could_not_fetch_data_from_external_api");
+            List<EmployeeDTO> employees = employeeApi.fetchUsers();
+            employees.forEach(employeeDTO -> log.debug("Fetched employee: {}", employeeDTO.getEmail()));
+            saveEmployees(employees);
+            log.info("Employees successfully saved to database!");
+            return employees;
+        } catch (FeignException feignException) {
+            log.error("Failed to fetch data from external API", feignException);
+            throw new ExternalApiException("Failed to fetch data from external API", feignException);
+        } catch (Exception unexpectedException) {
+            log.error("Unexpected error fetching data", unexpectedException);
+            throw new ExternalApiException("Unexpected error fetching data", unexpectedException);
         }
-
-        return employeeListDTO;
     }
 
-    private void saveToDatabase(List<EmployeeDTO> employeeListDTO) {
-        log.info("Saving fetched employees into database...");
+    private void saveEmployees(List<EmployeeDTO> employeeList) {
+        log.info("Saving employees into database...");
+        employeeList.forEach(this::saveEmployeeWithRelations);
+    }
 
-        for (EmployeeDTO employeeDTO : employeeListDTO) {
+    private void saveEmployeeWithRelations(EmployeeDTO employeeDTO) {
+        Employee employee = mapToEntity(employeeDTO);
+        employee = employeeRepository.save(employee);
+        addressService.save(employeeDTO.getAddress(), employee);
+        companyService.save(employeeDTO.getCompany(), employee);
+    }
 
-            Employee employee = new Employee()
-                    .withEmail(employeeDTO.getEmail())
-                    .withName(employeeDTO.getName())
-                    .withPhone(employeeDTO.getPhone())
-                    .withUsername(employeeDTO.getUsername())
-                    .withWebsite(employeeDTO.getWebsite());
-
-            employee = employeeRepository.save(employee);
-            addressService.save(employeeDTO.getAddress(), employee);
-            companyService.save(employeeDTO.getCompany(), employee);
-
-        }
-
+    private Employee mapToEntity(EmployeeDTO dto) {
+        return new Employee()
+                .withEmail(dto.getEmail())
+                .withName(dto.getName())
+                .withPhone(dto.getPhone())
+                .withUsername(dto.getUsername())
+                .withWebsite(dto.getWebsite());
     }
 
 
-    public List<EmployeeDTO> getEmployee() throws Exception {
-        List<EmployeeDTO> employeeDTOList;
-
+    @Override
+    public List<EmployeeDTO> getEmployees() {
         try {
             log.info("Fetching employees from database...");
-            List<Employee> employeeList = employeeRepository.findAll();
-            ModelMapper modelMapper = new ModelMapper();
-            employeeDTOList = Arrays.asList(modelMapper.map(employeeList, EmployeeDTO[].class));
-            employeeDTOList.forEach(employee -> log.debug("Employee fetched from database: {}", employee.getEmail()));
+            List<Employee> employees = employeeRepository.findAll();
+            List<EmployeeDTO> employeeDTOList = Arrays.asList(modelMapper.map(employees, EmployeeDTO[].class));
+            employeeDTOList.forEach(employeeDTO -> log.debug("Employee fetched: {}", employeeDTO.getEmail()));
             log.info("Employees successfully fetched!");
-        } catch (Exception error) {
-            log.error("Ops! Could not fetch employees from database: {}", error.getMessage());
-            throw new Exception("could_not_fetch_data_from_database");
+            return employeeDTOList;
+        } catch (Exception databaseAccessException) {
+            log.error("Failed to fetch employees from database", databaseAccessException);
+            throw new DatabaseAccessException("Failed to fetch employees from database", databaseAccessException);
         }
+    }
 
-        return employeeDTOList;
+
+    @Override
+    public EmployeeDTO getEmployeeByUuid(UUID uuid) {
+        try {
+            log.info("Fetching employee with UUID: {}", uuid);
+            Employee employee = findEmployeeByUuid(uuid);
+            EmployeeDTO dto = modelMapper.map(employee, EmployeeDTO.class);
+            log.debug("Employee fetched: {}", dto.getEmail());
+            return dto;
+        } catch (Exception employeeNotFoundException) {
+            log.error("Failed to fetch employee with UUID {}", uuid, employeeNotFoundException);
+            throw new EmployeeNotFoundException("Employee not found with UUID: " + uuid, employeeNotFoundException);
+        }
+    }
+
+
+    @Override
+    @Transactional
+    public EmployeeDTO updateEmployee(UUID uuid, EmployeeDTO employeeDTO) {
+        try {
+            log.info("Updating employee with UUID: {}", uuid);
+            Employee employee = findEmployeeByUuid(uuid);
+            modelMapper.getConfiguration().setSkipNullEnabled(true);
+            modelMapper.map(employeeDTO, employee);
+            Employee updatedEmployee = employeeRepository.save(employee);
+            EmployeeDTO updatedDTO = modelMapper.map(updatedEmployee, EmployeeDTO.class);
+            log.debug("Employee updated: {}", updatedDTO.getEmail());
+            return updatedDTO;
+        } catch (Exception updateEmployeeException) {
+            log.error("Failed to update employee with UUID {}", uuid, updateEmployeeException);
+            throw new UpdateEmployeeException("Could not update employee with UUID: " + uuid, updateEmployeeException);
+        }
+    }
+
+
+    @Override
+    @Transactional
+    public void deleteEmployee(UUID uuid) {
+        try {
+            log.info("Deleting employee with UUID: {}", uuid);
+            Employee employee = findEmployeeByUuid(uuid);
+            employeeRepository.delete(employee);
+            log.info("Employee with UUID {} successfully deleted", uuid);
+        } catch (Exception deleteEmployeeException) {
+            log.error("Failed to delete employee with UUID {}", uuid, deleteEmployeeException);
+            throw new DeleteEmployeeException("Could not delete employee with UUID: " + uuid, deleteEmployeeException);
+        }
+    }
+
+    private Employee findEmployeeByUuid(UUID uuid) {
+        return employeeRepository.findById(uuid).orElseThrow(() -> new EmployeeNotFoundException("Employee not found with UUID: " + uuid));
     }
 
 }

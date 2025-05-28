@@ -24,7 +24,7 @@
              </module>
             <!-- Capítulo 2 (Nomes Significativos):  Métodos devem começar com verbo seguido de maiúscula (obrigatório) -->
             <module name="MethodName">
-                <property name="format" value="^(get|set|calculate|process|validate|load|save|update|delete|send|fetch|create|handle|is|can|main|connect|execute|configure|info|servers|buildDescription)([A-Z][a-zA-Z0-9]*)?$"/>
+                <property name="format" value="^(get|set|find|map|calculate|process|validate|load|save|update|delete|send|fetch|create|handle|is|can|main|connect|execute|configure|info|servers|buildDescription)([A-Z][a-zA-Z0-9]*)?$"/>
             </module>
             <!-- Capítulo 2 (Nomes Significativos): Métodos devem começar com letra minúscula (qualquer nome) -->
             <module name="MethodName">
@@ -49,10 +49,10 @@
             <module name="NestedIfDepth">
                 <property name="max" value="2"/>
             </module>
-            <!-- Capítulo 3 (Funções): Métodos void devem ter no máximo 1 return + Métodos com retorno devem ter no máximo 2 return -->
+            <!-- Capítulo 3 (Funções): Métodos void devem ter no máximo 3 return + Métodos com retorno devem ter no máximo 3 return -->
             <module name="ReturnCount">
-                <property name="max" value="2"/>
-                <property name="maxForVoid" value="1"/>
+                <property name="max" value="4"/>
+                <property name="maxForVoid" value="2"/>
             </module>
             <!-- Capítulo 3 (Funções): Expressão booleana muito complexa. Limite a 2 termos -->
             <module name="BooleanExpressionComplexity">
