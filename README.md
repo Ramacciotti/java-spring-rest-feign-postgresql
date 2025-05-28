@@ -1,6 +1,6 @@
-# Articles Management with Thymeleaf
+# Employee CRUD
 
-A simple Spring Boot web application to manage and display articles, using Thymeleaf as the template engine and PostgreSQL as the database.
+Employee management CRUD project developed with Spring Boot, Feign Client, and PostgreSQL.
 
 ## Table of Contents
 
@@ -10,21 +10,23 @@ A simple Spring Boot web application to manage and display articles, using Thyme
 - [How to Run](#how-to-run)
 - [How to Test](#how-to-test)
 - [Important Configurations](#important-configurations)
+- [Test Coverage](#test-coverage)
 - [Contributions](#contributions)
 - [License](#license)
 
 ## Description
 
-This project provides a web interface for listing and adding articles. It leverages Spring Boot for backend, Thymeleaf for server-side rendering, and PostgreSQL for data persistence.
+This project implements a CRUD system for employee management, using Spring Boot for the application, Feign Client for external API communication, and PostgreSQL as the database.
 
 ## Technologies
 
 - Java 17+
 - Spring Boot
 - Spring Data JPA
-- Thymeleaf
+- Feign Client
 - PostgreSQL
 - Maven
+- JaCoCo (for test coverage)
 - Mockito & JUnit 5 (for unit testing)
 
 ## Prerequisites
@@ -39,7 +41,8 @@ This project provides a web interface for listing and adding articles. It levera
 
    ```bash
    git clone <REPOSITORY_URL>
-   cd articles-thymeleaf
+   cd employee-crud
+   ```
 
 2. Configure the database properties in
 
@@ -50,10 +53,6 @@ This project provides a web interface for listing and adding articles. It levera
   ```mvn clean install```
   ```mvn spring-boot:run```
 
-4. Access the application in your browser at:
-
-http://localhost:8080/v1/articles
-
 ## How to Test
 
 To run unit tests and generate the coverage report:
@@ -62,10 +61,9 @@ To run unit tests and generate the coverage report:
 
 ## Important Configurations
 
-1) The Thymeleaf template files are located in src/main/resources/templates.
-2) Static resources (CSS, JS) are in src/main/resources/static.
-3) Database credentials and URL are set in application.properties or application.yml.
-4) To enable Hibernate to update the schema automatically, set spring.jpa.hibernate.ddl-auto=update in your properties.
+1) The JaCoCo plugin is configured to exclude DTO, model, and exception classes from coverage since they are POJOs without logic to test.
+2) To modify exclusions or JaCoCo settings, check the pom.xml file.
+3) Set database credentials and URL in application.properties or application.yml.
 
 ## Contributions
 
