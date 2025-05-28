@@ -22,8 +22,5 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-      - name: Build with Maven
-        run: mvn clean install
-
-      - name: Run tests with coverage
-        run: mvn test
+      - name: Build and verify with coverage
+        run: mvn clean verify
