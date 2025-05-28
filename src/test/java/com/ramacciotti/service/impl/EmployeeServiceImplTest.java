@@ -13,9 +13,12 @@ import com.ramacciotti.repository.EmployeeRepository;
 import com.ramacciotti.service.AddressService;
 import com.ramacciotti.service.CompanyService;
 import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.*;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
 
+@ExtendWith(MockitoExtension.class)
 public class EmployeeServiceImplTest {
 
     @Mock

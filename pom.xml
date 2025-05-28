@@ -12,7 +12,7 @@
 
 	<groupId>com.ramacciotti</groupId>
 	<artifactId>employee-crud</artifactId>
-	<version>0.0.4-SNAPSHOT</version>
+	<version>0.0.5-SNAPSHOT</version>
 	<name>Employee CRUD</name>
 	<description>CRUD Microservice that consumes employee data from an external API and saves it on a local database.</description>
 
@@ -116,9 +116,19 @@
 				<version>0.8.8</version>
 				<executions>
 					<execution>
+						<id>prepare-agent</id>
 						<goals>
 							<goal>prepare-agent</goal>
 						</goals>
+						<configuration>
+							<excludes>
+								<exclude>**/dto/**</exclude>
+								<exclude>**/exceptions/**</exclude>
+								<exclude>**/utils/**</exclude>
+								<exclude>**/model/**</exclude>
+								<exclude>**/Application.class</exclude>
+							</excludes>
+						</configuration>
 					</execution>
 					<execution>
 						<id>report</id>
