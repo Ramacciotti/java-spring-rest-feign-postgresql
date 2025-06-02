@@ -3,4 +3,4 @@ target
 .gitignore
 README.md
 Dockerfile
-docker-compose.yml
+docker compose.yml
