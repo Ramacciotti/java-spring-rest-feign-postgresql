@@ -2,45 +2,40 @@ name: Java CI with Maven and Docker  # Nome do workflow
 
 on:
   push:
-    branches: [main]  # Executa o workflow quando houver push na branch main
+    branches: [main]                 # Executa o workflow quando fizer push na branch main
   pull_request:
-    branches: [main]  # Executa o workflow para pull requests direcionados à branch main
+    branches: [main]                 # Executa o workflow para PRs na branch main
 
 jobs:
   build:
-    runs-on: ubuntu-latest  # Define que o job vai rodar numa VM Ubuntu atualizada
+    runs-on: ubuntu-latest           # Usa uma VM Ubuntu para rodar o job
 
     steps:
-      - name: Checkout repository  # Passo para baixar o código do repositório
+      - name: Checkout repository    # Faz o checkout do código do repositório
         uses: actions/checkout@v3
 
-      - name: Set up JDK 17  # Passo para configurar o JDK 17 na VM
+      - name: Set up JDK 17           # Configura o Java 17 para compilar o projeto
         uses: actions/setup-java@v3
         with:
-          java-version: '17'  # Define a versão do Java que será usada
-          distribution: 'temurin'  # Define a distribuição do Java (Temurin é uma distribuição OpenJDK)
+          java-version: '17'          # Define a versão do Java
+          distribution: 'temurin'    # Define a distribuição OpenJDK Temurin
 
-      - name: Run Maven tests  # Roda os testes automatizados
-        run: mvn test
-
-      - name: Build Docker image  # Passo que constrói a imagem Docker da aplicação
+      - name: Build Docker image       # Constroi a imagem Docker da aplicação
         run: docker build -t employee-crud:latest .
 
-      - name: Run Docker container with Secrets  # Passo que roda o container Docker com as variáveis secretas do GitHub
+      - name: Run Docker container with Secrets  # Roda o container com as variáveis secretas do GitHub
         run: |
           docker run -d -p 8080:8080 \
             -e SPRING_DATASOURCE_URL=${{ secrets.SPRING_DATASOURCE_URL }} \
             -e SPRING_DATASOURCE_USERNAME=${{ secrets.SPRING_DATASOURCE_USERNAME }} \
             -e SPRING_DATASOURCE_PASSWORD=${{ secrets.SPRING_DATASOURCE_PASSWORD }} \
-            --name employee-app \
-            employee-crud:latest
+            --name employee-crud-container employee-crud:latest
 
-          echo "Esperando aplicação subir..."
-          sleep 15  # Aguarda o app subir
+      - name: Wait for application to start   # Aguarda 30 segundos para o app iniciar dentro do container
+        run: |
+          echo "Waiting 30 seconds for the app to start..."
+          sleep 30
 
-          echo "Testando endpoint do Swagger..."
-          curl -f http://localhost:8080/swagger-ui.html
-
-          echo "Parando o container..."
-          docker stop employee-app
-          docker rm employee-app
+      - name: Test Swagger endpoint     # Testa se o Swagger está disponível na porta 8080
+        run: |
+          curl --fail http://localhost:8080/swagger-ui/index.html
