@@ -24,11 +24,7 @@ jobs:
         run: docker build -t employee-crud:latest .
 
       - name: Run Docker container with Secrets  # Passo que roda o container Docker com as variáveis secretas do GitHub
-        run: docker run -d -p 8080:8080 \
-          -e SPRING_DATASOURCE_URL=${{ secrets.SPRING_DATASOURCE_URL }} \
-          -e SPRING_DATASOURCE_USERNAME=${{ secrets.SPRING_DATASOURCE_USERNAME }} \
-          -e SPRING_DATASOURCE_PASSWORD=${{ secrets.SPRING_DATASOURCE_PASSWORD }} \
-          employee-crud:latest
+        run: docker run -d -p 8080:8080 -e SPRING_DATASOURCE_URL=${{ secrets.SPRING_DATASOURCE_URL }} -e SPRING_DATASOURCE_USERNAME=${{ secrets.SPRING_DATASOURCE_USERNAME }} -e SPRING_DATASOURCE_PASSWORD=${{ secrets.SPRING_DATASOURCE_PASSWORD }} employee-crud:latest
 
       - name: Wait for the application to be ready and test Swagger endpoint  # Passo que espera a aplicação subir e testa o endpoint Swagger
         run: |
