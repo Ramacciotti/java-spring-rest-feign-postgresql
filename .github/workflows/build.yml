@@ -20,6 +20,9 @@ jobs:
           java-version: '17'  # Define a versão do Java que será usada
           distribution: 'temurin'  # Define a distribuição do Java (Temurin é uma distribuição OpenJDK)
 
+      - name: Run Maven tests  # Roda os testes automatizados
+        run: mvn test
+
       - name: Build Docker image  # Passo que constrói a imagem Docker da aplicação
         run: docker build -t employee-crud:latest .
 
@@ -29,4 +32,15 @@ jobs:
             -e SPRING_DATASOURCE_URL=${{ secrets.SPRING_DATASOURCE_URL }} \
             -e SPRING_DATASOURCE_USERNAME=${{ secrets.SPRING_DATASOURCE_USERNAME }} \
             -e SPRING_DATASOURCE_PASSWORD=${{ secrets.SPRING_DATASOURCE_PASSWORD }} \
+            --name employee-app \
             employee-crud:latest
+
+          echo "Esperando aplicação subir..."
+          sleep 15  # Aguarda o app subir
+
+          echo "Testando endpoint do Swagger..."
+          curl -f http://localhost:8080/swagger-ui.html
+
+          echo "Parando o container..."
+          docker stop employee-app
+          docker rm employee-app
