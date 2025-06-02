@@ -1,4 +1,4 @@
-version: '3.8'  # Versão da sintaxe do docker-compose usada
+version: '3.8'  # Versão da sintaxe do docker compose usada
 
 services:
   db:  # Serviço do banco de dados PostgreSQL
