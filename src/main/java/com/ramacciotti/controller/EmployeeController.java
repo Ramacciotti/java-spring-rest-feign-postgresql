@@ -27,7 +27,7 @@ public class EmployeeController {
     }
 
     @PostMapping
-    @Operation(description = "Fetch employees from external AðPI and save them in the database.")
+    @Operation(description = "Fetch employees from external API and save them in the database.")
     public ResponseEntity<List<EmployeeDTO>> saveEmployees() {
         try {
             List<EmployeeDTO> savedEmployees = employeeService.fetchAndSaveEmployeesFromApi();
