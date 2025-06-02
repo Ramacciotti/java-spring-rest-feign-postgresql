@@ -1,0 +1,27 @@
+version: '3.8'  # Versão da sintaxe do docker-compose usada
+
+services:
+  db:  # Serviço do banco de dados PostgreSQL
+    image: postgres:16  # Usa a imagem oficial do PostgreSQL versão 16
+    environment:  # Variáveis de ambiente para configurar o banco
+      POSTGRES_DB: employees  # Nome do banco criado automaticamente
+      POSTGRES_USER: ${SPRING_DATASOURCE_USERNAME}  # Usuário do banco, vindo da variável de ambiente
+      POSTGRES_PASSWORD: ${SPRING_DATASOURCE_PASSWORD}  # Senha do banco, vinda da variável de ambiente
+    ports:
+      - "5432:5432"  # Mapeia a porta 5432 do container para a mesma porta na máquina host (para acesso externo)
+    volumes:
+      - pgdata:/var/lib/postgresql/data  # Volume para persistir os dados do banco entre reinícios do container
+
+  app:  # Serviço da aplicação Spring Boot
+    build: .  # Builda a imagem Docker usando o Dockerfile na raiz do projeto
+    ports:
+      - "8080:8080"  # Expõe a porta 8080 do container na porta 8080 da máquina host
+    environment:  # Passa as variáveis de ambiente para a aplicação Spring Boot dentro do container
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/employees  # URL de conexão com o banco no serviço 'db'
+      SPRING_DATASOURCE_USERNAME: ${SPRING_DATASOURCE_USERNAME}  # Usuário do banco, passado da máquina host
+      SPRING_DATASOURCE_PASSWORD: ${SPRING_DATASOURCE_PASSWORD}  # Senha do banco, passada da máquina host
+    depends_on:
+      - db  # Garante que o serviço 'db' (PostgreSQL) será iniciado antes da aplicação
+
+volumes:
+  pgdata:  # Volume nomeado para armazenar os dados do PostgreSQL de forma persistente
