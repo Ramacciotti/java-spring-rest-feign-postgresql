@@ -30,7 +30,7 @@ jobs:
 
       - name: Start services with docker-compose  # Sobe app e banco juntos
         run: |
-          docker-compose up --build -d
+          docker compose up --build -d
 
       - name: Wait for the application to be ready  # Passo que espera a aplicação subir e testa o endpoint Swagger
         run: |
