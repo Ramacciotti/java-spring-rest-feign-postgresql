@@ -12,7 +12,7 @@
 
 	<groupId>com.ramacciotti</groupId>
 	<artifactId>employee-crud</artifactId>
-	<version>0.0.8-SNAPSHOT</version>
+	<version>0.0.9-SNAPSHOT</version>
 	<name>Employee CRUD</name>
 	<description>CRUD Microservice that consumes employee data from an external API and saves it on a local database.</description>
 
