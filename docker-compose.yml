@@ -1,6 +1,5 @@
-version: '3.8'  # Versão da sintaxe do docker compose usada
-
 services:
+
   db:  # Serviço do banco de dados PostgreSQL
     image: postgres:16  # Usa a imagem oficial do PostgreSQL versão 16
     environment:  # Variáveis de ambiente para configurar o banco
@@ -11,6 +10,8 @@ services:
       - "5432:5432"  # Mapeia a porta 5432 do container para a mesma porta na máquina host (para acesso externo)
     volumes:
       - pgdata:/var/lib/postgresql/data  # Volume para persistir os dados do banco entre reinícios do container
+    networks:
+      - aw-network  # Coloca o db na rede customizada e permitir comunicação com outros serviços**
 
   app:  # Serviço da aplicação Spring Boot
     build: .  # Builda a imagem Docker usando o Dockerfile na raiz do projeto
@@ -22,6 +23,35 @@ services:
       SPRING_DATASOURCE_PASSWORD: ${SPRING_DATASOURCE_PASSWORD}  # Senha do banco, passada da máquina host
     depends_on:
       - db  # Garante que o serviço 'db' (PostgreSQL) será iniciado antes da aplicação
+    networks:
+      - aw-network  # Adiciona o serviço à rede Docker personalizada
+
+  prometheus: # Serviço do Prometheus para monitoramento das métricas da aplicação
+    image: prom/prometheus:latest  # Usa a imagem oficial do Prometheus
+    volumes:
+      - ./config/prometheus.yml:/etc/prometheus/prometheus.yml  # Monta o arquivo de configuração do Prometheus dentro do container
+      - prometheus_data:/prometheus  # Volume para persistência dos dados do Prometheus
+    ports:
+      - "9090:9090"  # Expõe a porta 9090 para acesso à interface do Prometheus localmente
+    depends_on:
+      - app  # Garante que a aplicação esteja rodando antes do Prometheus iniciar
+    networks:
+      - aw-network  # Adiciona o serviço à rede Docker personalizada
+
+  grafana: # Serviço do Grafana para dashboard de métricas
+    image: grafana/grafana:latest # Usa a imagem oficial do Grafana
+    ports:
+      - "3000:3000"  # Expõe a porta 3000 para acesso à interface do Grafana localmente
+    depends_on:
+      - app  # Garante que a aplicação esteja rodando antes do Grafana iniciar
+    networks:
+      - aw-network  # Adiciona o serviço à rede Docker personalizada
 
 volumes:
   pgdata:  # Volume nomeado para armazenar os dados do PostgreSQL de forma persistente
+  prometheus_data:  # Volume nomeado para persistência dos dados do Prometheus
+  grafana_data:
+
+networks:
+  aw-network: # Rede Docker personalizada para comunicação entre containers
+    driver: bridge  # Tipo padrão de rede Docker que permite comunicação isolada entre containers

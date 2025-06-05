@@ -12,7 +12,7 @@
 
 	<groupId>com.ramacciotti</groupId>
 	<artifactId>employee-crud</artifactId>
-	<version>0.0.9-SNAPSHOT</version>
+	<version>0.0.10-SNAPSHOT</version>
 	<name>Employee CRUD</name>
 	<description>CRUD Microservice that consumes employee data from an external API and saves it on a local database.</description>
 
@@ -21,6 +21,15 @@
 	</properties>
 
 	<dependencies>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-actuator</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>io.micrometer</groupId>
+			<artifactId>micrometer-registry-prometheus</artifactId>
+		</dependency>
 
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
