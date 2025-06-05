@@ -2,6 +2,8 @@
 
 Employee management CRUD project developed with Spring Boot, Feign Client, and PostgreSQL.
 
+![image](https://github.com/user-attachments/assets/b38212d6-c1f6-4544-9158-3f7ae67138d6)
+
 ## Table of Contents
 
 - [Description](#description)
